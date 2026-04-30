@@ -18,49 +18,46 @@ const Application = () => {
   const navigateTo = useNavigate();
   const { id } = useParams();
 
-  // Function to handle file input changes with validation
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setFileError("");
-    
+
     if (!file) {
       setResume(null);
       return;
     }
-    
-    // Check file type
+
     const allowedTypes = ["image/png", "image/jpeg", "image/webp"];
     if (!allowedTypes.includes(file.type)) {
-      setFileError("Please select a valid image file (PNG, JPEG, or WEBP)");
+      setFileError("Please select a valid image file");
       setResume(null);
       return;
     }
-    
-    // Check file size (limit to 2MB)
+
     if (file.size > 2 * 1024 * 1024) {
       setFileError("File size should be less than 2MB");
       setResume(null);
       return;
     }
-    
+
     setResume(file);
   };
 
   const handleApplication = async (e) => {
     e.preventDefault();
-    
-    // Validate form
+
     if (!name || !email || !phone || !address || !coverLetter) {
-      toast.error("Please fill in all fields");
+      toast.error("Please fill all fields");
       return;
     }
-    
+
     if (!resume) {
-      setFileError("Please upload your resume");
+      setFileError("Please upload resume");
       return;
     }
-    
+
     setLoading(true);
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("email", email);
@@ -72,7 +69,7 @@ const Application = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:4000/api/v1/application/post",
+        "https://job-wala-oj9k.onrender.com/api/v1/application/post",
         formData,
         {
           withCredentials: true,
@@ -81,23 +78,21 @@ const Application = () => {
           },
         }
       );
+
       setName("");
       setEmail("");
       setCoverLetter("");
       setPhone("");
       setAddress("");
       setResume(null);
+
       toast.success(data.message);
       navigateTo("/job/getall");
+
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 
-        "Something went wrong. Please try again later.";
-      toast.error(errorMessage);
-      
-      // Show specific message for Cloudinary errors
-      if (errorMessage.includes("Cloudinary") || errorMessage.includes("api_key")) {
-        toast.error("File upload service is currently unavailable. Please try again later.");
-      }
+      toast.error(
+        error?.response?.data?.message || "Something went wrong"
+      );
     } finally {
       setLoading(false);
     }
@@ -111,70 +106,51 @@ const Application = () => {
     <section className="application">
       <div className="container">
         <h3>Application Form</h3>
+
         <form onSubmit={handleApplication}>
           <input
             type="text"
             placeholder="Your Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            required
           />
+
           <input
             type="email"
             placeholder="Your Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
           />
+
           <input
             type="number"
             placeholder="Your Phone Number"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            required
           />
+
           <input
             type="text"
             placeholder="Your Address"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            required
           />
+
           <textarea
             placeholder="Cover Letter..."
             value={coverLetter}
             onChange={(e) => setCoverLetter(e.target.value)}
-            required
           />
-          <div>
-            <label
-              style={{ textAlign: "start", display: "block", fontSize: "20px" }}
-            >
-              Upload Resume 
-              <p style={{ color: "red", fontSize: "12px", margin: "5px 0 0 0" }}>
-                (Supported formats: PNG, JPEG, WEBP. Max size: 2MB)
-              </p>
-            </label>
-            <input
-              type="file"
-              accept=".png,.jpg,.jpeg,.webp"
-              onChange={handleFileChange}
-              style={{ width: "100%" }}
-            />
-            {fileError && (
-              <p style={{ color: "red", fontSize: "14px", marginTop: "5px" }}>
-                {fileError}
-              </p>
-            )}
-          </div>
-          <button 
-            type="submit" 
-            disabled={loading}
-            style={{ 
-              opacity: loading ? 0.7 : 1,
-              cursor: loading ? "not-allowed" : "pointer" 
-            }}
-          >
+
+          <input
+            type="file"
+            accept=".png,.jpg,.jpeg,.webp"
+            onChange={handleFileChange}
+          />
+
+          {fileError && <p style={{ color: "red" }}>{fileError}</p>}
+
+          <button type="submit" disabled={loading}>
             {loading ? "Submitting..." : "Send Application"}
           </button>
         </form>
