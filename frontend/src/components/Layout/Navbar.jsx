@@ -15,7 +15,6 @@ const Navbar = () => {
     try {
       const response = await axios.get(
         "https://job-wala-oj9k.onrender.com/api/v1/user/logout"
-        // ❌ removed withCredentials
       );
       toast.success(response.data.message);
     } catch (error) {
@@ -30,11 +29,16 @@ const Navbar = () => {
   return (
     <nav className={isAuthorized ? "navbarShow" : "navbarHide"}>
       <div className="container">
+
+        {/* 🔥 LOGO CHANGED */}
         <div className="logo">
-          <img src="/careerconnect-white.png" alt="logo" />
+          <h2 style={{ color: "white", fontWeight: "bold" }}>
+            Job-Wala
+          </h2>
         </div>
 
         <ul className={!show ? "menu" : "show-menu menu"}>
+
           <li>
             <Link to={"/"} onClick={() => setShow(false)}>
               HOME
@@ -50,7 +54,7 @@ const Navbar = () => {
           <li>
             <Link to={"/applications/me"} onClick={() => setShow(false)}>
               {user && user.role === "Employer"
-                ? "APPLICANT'S APPLICATIONS"
+                ? "APPLICANTS"
                 : "MY APPLICATIONS"}
             </Link>
           </li>
@@ -59,24 +63,41 @@ const Navbar = () => {
             <>
               <li>
                 <Link to={"/job/post"} onClick={() => setShow(false)}>
-                  POST NEW JOB
+                  POST JOB
                 </Link>
               </li>
 
               <li>
                 <Link to={"/job/me"} onClick={() => setShow(false)}>
-                  VIEW YOUR JOBS
+                  MY JOBS
                 </Link>
               </li>
             </>
           )}
 
-          <button onClick={handleLogout}>LOGOUT</button>
+          {/* 🔥 Better button style */}
+          <li>
+            <button
+              onClick={handleLogout}
+              style={{
+                background: "#ff4d4d",
+                color: "white",
+                border: "none",
+                padding: "6px 12px",
+                borderRadius: "5px",
+                cursor: "pointer"
+              }}
+            >
+              LOGOUT
+            </button>
+          </li>
+
         </ul>
 
         <div className="hamburger" onClick={() => setShow(!show)}>
           {show ? <AiOutlineClose /> : <GiHamburgerMenu />}
         </div>
+
       </div>
     </nav>
   );
