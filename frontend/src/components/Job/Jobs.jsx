@@ -6,19 +6,20 @@ import { Context } from "../../main";
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
   const { isAuthorized } = useContext(Context);
+
   useEffect(() => {
-    try {
-      axios
-        .get("http://localhost:4000/api/v1/job/getall", {
-          withCredentials: true,
-        })
-        .then((res) => {
-          setJobs(res.data);
-        });
-    } catch (error) {
-      console.log(error);
-    }
+    axios
+      .get("https://job-wala-oj9k.onrender.com/api/v1/job/getall", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setJobs(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
+
   if (!isAuthorized) {
     return <Navigate to="/login" />;
   }
