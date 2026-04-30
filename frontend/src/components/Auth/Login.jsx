@@ -19,96 +19,102 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const { data } = await axios.post(
-        "http://localhost:4000/api/v1/user/login",
+        "https://job-wala-oj9k.onrender.com/api/v1/user/login",
         { email, password, role },
         {
           headers: {
             "Content-Type": "application/json",
-          },
-          withCredentials: true,
+          }
+          // ❌ removed withCredentials
         }
       );
+
       toast.success(data.message);
       setEmail("");
       setPassword("");
       setRole("");
       setIsAuthorized(true);
+
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(
+        error?.response?.data?.message || "Login failed"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  if(isAuthorized){
-    return <Navigate to={'/'}/>
+  if (isAuthorized) {
+    return <Navigate to={"/"} />;
   }
 
   return (
-    <>
-      <section className="authPage">
-        <div className="container">
-          <div className="header">
-            <img src="/careerconnect-black.png" alt="logo" />
-            <h3>Login to your account</h3>
+    <section className="authPage">
+      <div className="container">
+        <div className="header">
+          <img src="/careerconnect-black.png" alt="logo" />
+          <h3>Login to your account</h3>
+        </div>
+
+        <form>
+          <div className="inputTag">
+            <label>Login As</label>
+            <div>
+              <select value={role} onChange={(e) => setRole(e.target.value)}>
+                <option value="">Select Role</option>
+                <option value="Job Seeker">Job Seeker</option>
+                <option value="Employer">Employer</option>
+              </select>
+              <FaRegUser />
+            </div>
           </div>
-          <form>
-            <div className="inputTag">
-              <label>Login As</label>
-              <div>
-                <select value={role} onChange={(e) => setRole(e.target.value)}>
-                  <option value="">Select Role</option>
-                  
-                  <option value="Job Seeker">Job Seeker</option>
-                  <option value="Employer">Employer</option>
-                </select>
-                <FaRegUser />
-              </div>
+
+          <div className="inputTag">
+            <label>Email Address</label>
+            <div>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <MdOutlineMailOutline />
             </div>
-            <div className="inputTag">
-              <label>Email Address</label>
-              <div>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <MdOutlineMailOutline />
-              </div>
+          </div>
+
+          <div className="inputTag">
+            <label>Password</label>
+            <div>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+              </button>
             </div>
-            <div className="inputTag">
-              <label>Password</label>
-              <div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="eye-toggle"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-                </button>
-              </div>
-            </div>
-            <button type="submit" onClick={handleLogin} disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
-            </button>
-            <Link to={"/register"}>Register Now</Link>
-          </form>
-        </div>
-        <div className="banner">
-          <img src="/login.png" alt="login" />
-        </div>
-      </section>
-    </>
+          </div>
+
+          <button type="submit" onClick={handleLogin} disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+
+          <Link to={"/register"}>Register Now</Link>
+        </form>
+      </div>
+
+      <div className="banner">
+        <img src="/login.png" alt="login" />
+      </div>
+    </section>
   );
 };
 
